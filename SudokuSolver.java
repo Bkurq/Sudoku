@@ -1,5 +1,6 @@
 public class SudokuSolver {
-    private int[][] originalTable, workingTable;
+    private int[][] workingTable;
+    private int[][] originalTable;
 
     public SudokuSolver(int[][] table) {
         originalTable = (int[][]) table.clone();

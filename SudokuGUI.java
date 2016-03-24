@@ -14,8 +14,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
+import java.util.ArrayList;
 
 public class SudokuGUI extends Application {
+    private ArrayList<TextField> numberFields;
 
     public static void main(String[] args) {
         launch(args);
@@ -25,22 +27,25 @@ public class SudokuGUI extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Sudoku solver");
         BorderPane root = new BorderPane();
-        root.setPadding(new Insets(10, 10, 10, 10));
 
         TilePane sudokuGrid = new TilePane();
-        sudokuGrid.setPrefColumns(9);
-        sudokuGrid.setPrefRows(9);
-        for(int index = 0; index < 81; index++) {
-            TextField field = new TextField();
-            field.setPrefSize(50, 50);
-            sudokuGrid.getChildren().add(field);
+        sudokuGrid.setPrefColumns(3);
+        sudokuGrid.setPrefRows(3);
+        sudokuGrid.setPadding(new Insets(4, 4, 4, 4));
+        sudokuGrid.setHgap(3);
+        sudokuGrid.setVgap(3);
+        sudokuGrid.setAlignment(Pos.CENTER);
+        sudokuGrid.setTileAlignment(Pos.CENTER);
+        sudokuGrid.setStyle("-fx-background-color: #DADADF");
+        for(int index = 0; index < 9; index++) {
+            createSquare(sudokuGrid, index);
         }
         root.setTop(sudokuGrid);
 
         Button buttonSolve = new Button();
         buttonSolve.setText("Solve");
         buttonSolve.setStyle("-fx-font: 18 segoiui;");
-        buttonSolve.setPrefSize(150, 50);
+        buttonSolve.setPrefSize(120, 40);
         buttonSolve.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -51,7 +56,7 @@ public class SudokuGUI extends Application {
         Button buttonClear = new Button();
         buttonClear.setText("Clear");
         buttonClear.setStyle("-fx-font: 18 segoiui;");
-        buttonClear.setPrefSize(150, 50);
+        buttonClear.setPrefSize(120, 40);
         buttonClear.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -60,14 +65,39 @@ public class SudokuGUI extends Application {
         });
 
         HBox controls = new HBox();
+        controls.setPadding(new Insets(4, 4, 4, 4));
         controls.setSpacing(20);
         controls.setAlignment(Pos.CENTER);
         controls.getChildren().addAll(buttonSolve, buttonClear);
 
-        root.setBottom(controls);
+        root.setCenter(controls);
 
         primaryStage.setResizable(false);
-        primaryStage.setScene(new Scene(root, 460, 520));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
+    }
+
+    private void createSquare(TilePane sudokuGrid, int index) {
+        TilePane pane = new TilePane();
+        pane.setPrefRows(3);
+        pane.setPrefColumns(3);
+        pane.setVgap(index % 2 == 0 ? 3 : 4);
+        pane.setHgap(index % 2 == 0 ? 3 : 4);
+        pane.setAlignment(Pos.CENTER);
+        pane.setPadding(new Insets(2, 2, 2, 2));
+
+        for(int i = 0; i < 9; i++) {
+            TextField field = new TextField();
+            field.setPrefSize(index % 2 == 0 ? 45 : 43, index % 2 == 0 ? 40 : 39);
+            field.setAlignment(Pos.CENTER);
+            field.setPadding(new Insets(0, 0, 0, 0));
+            if(index % 2 == 0)
+                field.setStyle("-fx-background-color: #ffa500; -fx-font: 22 segoiui;");
+            else
+                field.setStyle("-fx-font: 22 segoiui;");
+            pane.getChildren().add(field);
+        }
+
+        sudokuGrid.getChildren().add(pane);
     }
 }

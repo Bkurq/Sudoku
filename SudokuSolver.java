@@ -1,3 +1,6 @@
+/**
+ * Class for solving sudoku by recursive backtracking
+ */
 public class SudokuSolver {
     private int[][] workingTable;
     private int[][] originalTable;

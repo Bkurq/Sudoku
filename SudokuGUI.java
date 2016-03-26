@@ -7,17 +7,18 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
-import java.util.ArrayList;
 
 public class SudokuGUI extends Application {
-    private ArrayList<TextField> numberFields;
+    private SudokuTextField[][] sudokuTable = new SudokuTextField[9][9];
 
     public static void main(String[] args) {
         launch(args);
@@ -26,6 +27,7 @@ public class SudokuGUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Sudoku solver");
+        primaryStage.getIcons().add(new Image("file:Icon.png"));
         BorderPane root = new BorderPane();
 
         TilePane sudokuGrid = new TilePane();
@@ -49,7 +51,12 @@ public class SudokuGUI extends Application {
         buttonSolve.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Solve");
+                int[][] ret = new int[9][9];
+                for(int i = 0; i < 9; i++) {
+                    for(int j = 0; j < 9; j++) {
+                        ret[i][j] = Integer.parseInt(sudokuTable[i][j].getText());
+                    }
+                }
             }
         });
 
@@ -60,7 +67,11 @@ public class SudokuGUI extends Application {
         buttonClear.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Clear");
+                for(Node pane:sudokuGrid.getChildren()) {
+                    for(Node field:((TilePane) pane).getChildren()) {
+                        ((SudokuTextField) field).setText("");
+                    }
+                }
             }
         });
 
@@ -87,7 +98,7 @@ public class SudokuGUI extends Application {
         pane.setPadding(new Insets(2, 2, 2, 2));
 
         for(int i = 0; i < 9; i++) {
-            TextField field = new TextField();
+            SudokuTextField field = new SudokuTextField(1);
             field.setPrefSize(index % 2 == 0 ? 45 : 43, index % 2 == 0 ? 40 : 39);
             field.setAlignment(Pos.CENTER);
             field.setPadding(new Insets(0, 0, 0, 0));
@@ -97,7 +108,35 @@ public class SudokuGUI extends Application {
                 field.setStyle("-fx-font: 22 segoiui;");
             pane.getChildren().add(field);
         }
-
         sudokuGrid.getChildren().add(pane);
+    }
+
+    /**
+     * TextField with limited maximum length
+     */
+    private class SudokuTextField extends TextField {
+        int length;
+        int compare;
+
+        private SudokuTextField(int length)
+        {
+            super();
+            this.length = length;
+        }
+
+        public void replaceText(int start, int end, String text)
+        {
+            compare = getText().length() - (end - start) + text.length();
+            if(compare <= length || start != end)
+                super.replaceText( start, end, text );
+        }
+
+        public void replaceSelection(String text)
+        {
+            compare = getText().length() + text.length();
+            if(compare <= length )
+                super.replaceSelection( text );
+        }
+
     }
 }

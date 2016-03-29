@@ -18,7 +18,6 @@ import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
 public class SudokuGUI extends Application {
-    private SudokuTextField[][] sudokuTable = new SudokuTextField[9][9];
 
     public static void main(String[] args) {
         launch(args);
@@ -52,9 +51,27 @@ public class SudokuGUI extends Application {
             @Override
             public void handle(ActionEvent event) {
                 int[][] ret = new int[9][9];
-                for(int i = 0; i < 9; i++) {
-                    for(int j = 0; j < 9; j++) {
-                        ret[i][j] = Integer.parseInt(sudokuTable[i][j].getText());
+                for(Node pane:sudokuGrid.getChildren()){
+                    for(Node field:((TilePane) pane).getChildren()) {
+                        int row = ((SudokuTextField) field).getRowPosition();
+                        int col = ((SudokuTextField) field).getColumnPosition();
+                        String string = ((SudokuTextField) field).getText();
+                        try {
+                            ret[row][col] = Integer.parseInt(string);
+                        } catch (Exception e) {
+                            ret[row][col] = 0;
+                        }
+
+                    }
+                }
+                SudokuSolver solver = new SudokuSolver(ret);
+                solver.solve();
+                ret = solver.getAnswer();
+                for(Node pane:sudokuGrid.getChildren()){
+                    for(Node field:((TilePane) pane).getChildren()) {
+                        int row = ((SudokuTextField) field).getRowPosition();
+                        int col = ((SudokuTextField) field).getColumnPosition();
+                        ((SudokuTextField) field).setText(ret[row][col] + "");
                     }
                 }
             }
@@ -95,13 +112,18 @@ public class SudokuGUI extends Application {
         pane.setVgap(index % 2 == 0 ? 3 : 4);
         pane.setHgap(index % 2 == 0 ? 3 : 4);
         pane.setAlignment(Pos.CENTER);
-        pane.setPadding(new Insets(2, 2, 2, 2));
+        pane.setPadding(new Insets(1, 1, 1, 1));
 
         for(int i = 0; i < 9; i++) {
-            SudokuTextField field = new SudokuTextField(1);
+            int fieldNumber = (index % 3) * 3 + (index / 3) * 27 + (i / 3) * 9 + i % 3 + 1;
+            int row = (fieldNumber - 1) / 9;
+            int col = (fieldNumber - 1) % 9;
+
+            SudokuTextField field = new SudokuTextField(row, col, 1);
             field.setPrefSize(index % 2 == 0 ? 45 : 43, index % 2 == 0 ? 40 : 39);
             field.setAlignment(Pos.CENTER);
             field.setPadding(new Insets(0, 0, 0, 0));
+
             if(index % 2 == 0)
                 field.setStyle("-fx-background-color: #ffa500; -fx-font: 22 segoiui;");
             else
@@ -115,13 +137,17 @@ public class SudokuGUI extends Application {
      * TextField with limited maximum length
      */
     private class SudokuTextField extends TextField {
-        int length;
-        int compare;
+        private int length;
+        private int compare;
+        private int rowPosition;
+        private int columnPosition;
 
-        private SudokuTextField(int length)
+        private SudokuTextField(int row, int col, int length)
         {
             super();
             this.length = length;
+            rowPosition = row;
+            columnPosition = col;
         }
 
         public void replaceText(int start, int end, String text)
@@ -138,5 +164,13 @@ public class SudokuGUI extends Application {
                 super.replaceSelection( text );
         }
 
+        public int getRowPosition() {
+            return rowPosition;
+        }
+
+
+        public int getColumnPosition() {
+            return columnPosition;
+        }
     }
 }

@@ -3,8 +3,6 @@
  */
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -29,10 +27,11 @@ public class SudokuGUI extends Application {
         primaryStage.getIcons().add(new Image("file:Icon.png"));
         BorderPane root = new BorderPane();
 
+        //Sudoku grid
         TilePane sudokuGrid = new TilePane();
         sudokuGrid.setPrefColumns(3);
         sudokuGrid.setPrefRows(3);
-        sudokuGrid.setPadding(new Insets(4, 4, 4, 4));
+        sudokuGrid.setPadding(new Insets(6, 0, 6, 0));
         sudokuGrid.setHgap(3);
         sudokuGrid.setVgap(3);
         sudokuGrid.setAlignment(Pos.CENTER);
@@ -43,55 +42,63 @@ public class SudokuGUI extends Application {
         }
         root.setTop(sudokuGrid);
 
+        //Button to solve sudoku
         Button buttonSolve = new Button();
         buttonSolve.setText("Solve");
         buttonSolve.setStyle("-fx-font: 18 segoiui;");
         buttonSolve.setPrefSize(120, 40);
-        buttonSolve.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                int[][] ret = new int[9][9];
-                for(Node pane:sudokuGrid.getChildren()){
-                    for(Node field:((TilePane) pane).getChildren()) {
-                        int row = ((SudokuTextField) field).getRowPosition();
-                        int col = ((SudokuTextField) field).getColumnPosition();
-                        String string = ((SudokuTextField) field).getText();
-                        try {
-                            ret[row][col] = Integer.parseInt(string);
-                        } catch (Exception e) {
-                            ret[row][col] = 0;
-                        }
+        buttonSolve.setOnAction(event -> {
+            int[][] ret = new int[9][9];
+            for(Node pane:sudokuGrid.getChildren()){
+                for(Node field:((TilePane) pane).getChildren()) {
+                    int row = ((SudokuTextField) field).getRowPosition();
+                    int col = ((SudokuTextField) field).getColumnPosition();
+                    String string = ((SudokuTextField) field).getText();
+                    if(string.length() == 0)
+                        ret[row][col] = 0;
+                    else
+                        ret[row][col] = Integer.parseInt(string);
+                }
+            }
+            SudokuSolver solver = new SudokuSolver(ret);
+            ret = solver.solve();
+            int index = 0;
+            for(Node pane:sudokuGrid.getChildren()){
+                for(Node field:((TilePane) pane).getChildren()){
+                    SudokuTextField sudokuField = (SudokuTextField) field;
+                    int row = sudokuField.getRowPosition();
+                    int col = sudokuField.getColumnPosition();
 
+                    if(ret[row][col] == -1) {
+                        field.setStyle("-fx-background-color: #ff7a7a; -fx-font: 22 segoiui;");
+                    } else if(ret[row][col] == 0) {
+                        sudokuField.setText("");
+                    } else {
+                        sudokuField.setText(Integer.toString(ret[row][col]));
+                        sudokuField.setFieldStyle(index);
                     }
                 }
-                SudokuSolver solver = new SudokuSolver(ret);
-                solver.solve();
-                ret = solver.getAnswer();
-                for(Node pane:sudokuGrid.getChildren()){
-                    for(Node field:((TilePane) pane).getChildren()) {
-                        int row = ((SudokuTextField) field).getRowPosition();
-                        int col = ((SudokuTextField) field).getColumnPosition();
-                        ((SudokuTextField) field).setText(ret[row][col] + "");
-                    }
-                }
+                index++;
             }
         });
 
+        //Button to clear the grid
         Button buttonClear = new Button();
         buttonClear.setText("Clear");
         buttonClear.setStyle("-fx-font: 18 segoiui;");
         buttonClear.setPrefSize(120, 40);
-        buttonClear.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                for(Node pane:sudokuGrid.getChildren()) {
-                    for(Node field:((TilePane) pane).getChildren()) {
-                        ((SudokuTextField) field).setText("");
-                    }
+        buttonClear.setOnAction(event -> {
+            int index = 0;
+            for(Node pane:sudokuGrid.getChildren()){
+                for(Node field:((TilePane) pane).getChildren()){
+                    ((SudokuTextField) field).setText("");
+                    ((SudokuTextField) field).setFieldStyle(index);
                 }
+                index++;
             }
         });
 
+        //Horizontal box that contains buttons
         HBox controls = new HBox();
         controls.setPadding(new Insets(4, 4, 4, 4));
         controls.setSpacing(20);
@@ -106,6 +113,7 @@ public class SudokuGUI extends Application {
     }
 
     private void createSquare(TilePane sudokuGrid, int index) {
+        //3x3 subsquare
         TilePane pane = new TilePane();
         pane.setPrefRows(3);
         pane.setPrefColumns(3);
@@ -114,60 +122,85 @@ public class SudokuGUI extends Application {
         pane.setAlignment(Pos.CENTER);
         pane.setPadding(new Insets(1, 1, 1, 1));
 
+        //Fill the square and map tiles to their coordinates
         for(int i = 0; i < 9; i++) {
+            //Determine the tile's position in the sudoku grid
             int fieldNumber = (index % 3) * 3 + (index / 3) * 27 + (i / 3) * 9 + i % 3 + 1;
             int row = (fieldNumber - 1) / 9;
             int col = (fieldNumber - 1) % 9;
 
-            SudokuTextField field = new SudokuTextField(row, col, 1);
+            //Formatting
+            SudokuTextField field = new SudokuTextField(row, col);
             field.setPrefSize(index % 2 == 0 ? 45 : 43, index % 2 == 0 ? 40 : 39);
             field.setAlignment(Pos.CENTER);
             field.setPadding(new Insets(0, 0, 0, 0));
 
-            if(index % 2 == 0)
-                field.setStyle("-fx-background-color: #ffa500; -fx-font: 22 segoiui;");
-            else
-                field.setStyle("-fx-font: 22 segoiui;");
+            //Styling
+            field.setFieldStyle(index);
+
             pane.getChildren().add(field);
         }
         sudokuGrid.getChildren().add(pane);
     }
 
     /**
-     * TextField with limited maximum length
+     * TextField with limited maximum length that only accepts number 1-9 and holds its coordinates in the sudoku grid
      */
     private class SudokuTextField extends TextField {
-        private int length;
+        private final int length;
         private int compare;
-        private int rowPosition;
-        private int columnPosition;
+        private final int rowPosition;
+        private final int columnPosition;
 
-        private SudokuTextField(int row, int col, int length)
+        private SudokuTextField(int row, int col)
         {
             super();
-            this.length = length;
+            this.length = 1;
             rowPosition = row;
             columnPosition = col;
         }
 
-        public void replaceText(int start, int end, String text)
-        {
+        //Ensures that only numbers can be entered by the user
+        public void replaceText(int start, int end, String text) {
+            if(text.length() == 0)
+                super.replaceText(start, end, text);
             compare = getText().length() - (end - start) + text.length();
-            if(compare <= length || start != end)
-                super.replaceText( start, end, text );
+            if(compare <= length || start != end) {
+                try {
+                    if(Integer.parseInt(text) > 0)
+                        super.replaceText(start, end, text);
+                } catch (Exception ignored) {
+
+                }
+            }
         }
 
-        public void replaceSelection(String text)
-        {
+        //Ensures that only numbers can be entered by the user
+        public void replaceSelection(String text) {
+            if(text.length() == 0)
+                super.replaceSelection(text);
             compare = getText().length() + text.length();
             if(compare <= length )
-                super.replaceSelection( text );
+                try {
+                    if(Integer.parseInt(text) > 0)
+                        super.replaceSelection(text);
+                } catch (Exception ignored) {
+
+                }
+
+        }
+
+        //Styling
+        public void setFieldStyle(int index) {
+            if(index % 2 == 0)
+                this.setStyle("-fx-background-color: #ffa500; -fx-font: 22 segoiui;");
+            else
+                this.setStyle("-fx-font: 22 segoiui;");
         }
 
         public int getRowPosition() {
             return rowPosition;
         }
-
 
         public int getColumnPosition() {
             return columnPosition;

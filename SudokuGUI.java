@@ -70,7 +70,7 @@ public class SudokuGUI extends Application {
                     int col = sudokuField.getColumnPosition();
 
                     if(ret[row][col] == -1) {
-                        field.setStyle("-fx-background-color: #ff7a7a; -fx-font: 22 segoiui;");
+                        field.setStyle("-fx-background-color: #FF4545; -fx-font: 22 segoiui;");
                     } else if(ret[row][col] == 0) {
                         sudokuField.setText("");
                     } else {

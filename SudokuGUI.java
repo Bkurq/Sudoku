@@ -193,7 +193,7 @@ public class SudokuGUI extends Application {
         //Styling
         public void setFieldStyle(int index) {
             if(index % 2 == 0)
-                this.setStyle("-fx-background-color: #ffa500; -fx-font: 22 segoiui;");
+                this.setStyle("-fx-background-color: #ff7f50; -fx-font: 22 segoiui;");
             else
                 this.setStyle("-fx-font: 22 segoiui;");
         }

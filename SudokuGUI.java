@@ -24,7 +24,7 @@ public class SudokuGUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Sudoku solver");
-        primaryStage.getIcons().add(new Image("file:Icon.png"));
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("Icon.png")));
         BorderPane root = new BorderPane();
 
         //Sudoku grid

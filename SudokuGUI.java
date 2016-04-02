@@ -14,9 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.PathElement;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -32,6 +29,19 @@ public class SudokuGUI extends Application {
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("Icon.png")));
         BorderPane root = new BorderPane();
         root.setOpacity(0);
+
+        //Animations
+        ScaleTransition scaleUp = new ScaleTransition(new Duration(200));
+        scaleUp.setFromX(1);
+        scaleUp.setFromY(1);
+        scaleUp.setToX(1.1);
+        scaleUp.setToY(1.1);
+
+        ScaleTransition scaleDown = new ScaleTransition(new Duration(200));
+        scaleDown.setFromX(1.1);
+        scaleDown.setFromY(1.1);
+        scaleDown.setToX(1);
+        scaleDown.setToY(1);
 
         //Sudoku grid
         TilePane sudokuGrid = new TilePane();
@@ -88,6 +98,14 @@ public class SudokuGUI extends Application {
                 index++;
             }
         });
+        buttonSolve.setOnMouseEntered(event -> {
+            scaleUp.setNode(buttonSolve);
+            scaleUp.play();
+        });
+        buttonSolve.setOnMouseExited(event -> {
+            scaleDown.setNode(buttonSolve);
+            scaleDown.play();
+        });
 
         //Button to clear the grid
         Button buttonClear = new Button();
@@ -103,6 +121,14 @@ public class SudokuGUI extends Application {
                 }
                 index++;
             }
+        });
+        buttonClear.setOnMouseEntered(event -> {
+            scaleUp.setNode(buttonClear);
+            scaleUp.play();
+        });
+        buttonClear.setOnMouseExited(event -> {
+            scaleDown.setNode(buttonClear);
+            scaleDown.play();
         });
 
         //Horizontal box that contains buttons

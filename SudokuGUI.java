@@ -87,10 +87,19 @@ public class SudokuGUI extends Application {
 
                     if(ret[row][col] == -1) {
                         field.setStyle("-fx-control-inner-background: #FF4545; -fx-font: 22 segoiui;");
-
+                        ScaleTransition st = new ScaleTransition(new Duration(300), field);
+                        st.setFromX(1.17);
+                        st.setFromY(1.17);
+                        st.setToX(1);
+                        st.setToY(1);
+                        st.play();
                     } else if(ret[row][col] == 0) {
                         sudokuField.setText("");
                     } else {
+                        FadeTransition sd = new FadeTransition(new Duration(400), field);
+                        sd.setFromValue(0);
+                        sd.setToValue(1);
+                        sd.play();
                         sudokuField.setText(Integer.toString(ret[row][col]));
                         sudokuField.setFieldStyle(index);
                     }

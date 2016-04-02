@@ -2,6 +2,7 @@
  * Created by bert2 on 2016-03-23.
  */
 
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,7 +14,11 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class SudokuGUI extends Application {
 
@@ -26,6 +31,7 @@ public class SudokuGUI extends Application {
         primaryStage.setTitle("Sudoku solver");
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("Icon.png")));
         BorderPane root = new BorderPane();
+        root.setOpacity(0);
 
         //Sudoku grid
         TilePane sudokuGrid = new TilePane();
@@ -70,7 +76,8 @@ public class SudokuGUI extends Application {
                     int col = sudokuField.getColumnPosition();
 
                     if(ret[row][col] == -1) {
-                        field.setStyle("-fx-background-color: #FF4545; -fx-font: 22 segoiui;");
+                        field.setStyle("-fx-control-inner-background: #FF4545; -fx-font: 22 segoiui;");
+
                     } else if(ret[row][col] == 0) {
                         sudokuField.setText("");
                     } else {
@@ -109,7 +116,15 @@ public class SudokuGUI extends Application {
 
         primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(root));
+
+        //SudokuGrid animation
+        FadeTransition ft = new FadeTransition(new Duration(500), root);
+        ParallelTransition pt = new ParallelTransition(ft);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+
         primaryStage.show();
+        pt.play();
     }
 
     private void createSquare(TilePane sudokuGrid, int index) {
@@ -137,6 +152,31 @@ public class SudokuGUI extends Application {
 
             //Styling
             field.setFieldStyle(index);
+
+            //Animations
+            ScaleTransition scaleUp = new ScaleTransition(new Duration(200), field);
+            scaleUp.setFromX(1);
+            scaleUp.setFromY(1);
+            scaleUp.setToX(1.05);
+            scaleUp.setToY(1.05);
+
+            ScaleTransition scaleDown = new ScaleTransition(new Duration(200), field);
+            scaleDown.setFromX(1.05);
+            scaleDown.setFromY(1.05);
+            scaleDown.setToX(1);
+            scaleDown.setToY(1);
+
+            //Play animation on focus
+            field.focusedProperty().addListener(event -> {
+                if(field.focusedProperty().getValue()) {
+                    scaleUp.play();
+                } else {
+                    scaleDown.play();
+                }
+            });
+
+            //Focus on mouse over
+            field.setOnMouseEntered(event -> field.requestFocus());
 
             pane.getChildren().add(field);
         }
@@ -193,7 +233,7 @@ public class SudokuGUI extends Application {
         //Styling
         public void setFieldStyle(int index) {
             if(index % 2 == 0)
-                this.setStyle("-fx-background-color: #ff7f50; -fx-font: 22 segoiui;");
+                this.setStyle("-fx-control-inner-background: #ff7f50; -fx-font: 22 segoiui;");
             else
                 this.setStyle("-fx-font: 22 segoiui;");
         }

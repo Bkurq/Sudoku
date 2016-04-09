@@ -47,7 +47,7 @@ public class SudokuGUI extends Application {
         TilePane sudokuGrid = new TilePane();
         sudokuGrid.setPrefColumns(3);
         sudokuGrid.setPrefRows(3);
-        sudokuGrid.setPadding(new Insets(6, 0, 6, 0));
+        sudokuGrid.setPadding(new Insets(0, 0, 0, 0));
         sudokuGrid.setHgap(3);
         sudokuGrid.setVgap(3);
         sudokuGrid.setAlignment(Pos.CENTER);
@@ -56,7 +56,7 @@ public class SudokuGUI extends Application {
         for(int index = 0; index < 9; index++) {
             createSquare(sudokuGrid, index);
         }
-        root.setTop(sudokuGrid);
+        root.setCenter(sudokuGrid);
 
         //Button to solve sudoku
         Button buttonSolve = new Button();
@@ -108,6 +108,7 @@ public class SudokuGUI extends Application {
             }
         });
         buttonSolve.setOnMouseEntered(event -> {
+            buttonSolve.requestFocus();
             scaleUp.setNode(buttonSolve);
             scaleUp.play();
         });
@@ -125,6 +126,10 @@ public class SudokuGUI extends Application {
             int index = 0;
             for(Node pane:sudokuGrid.getChildren()){
                 for(Node field:((TilePane) pane).getChildren()){
+                    FadeTransition sd = new FadeTransition(new Duration(400), field);
+                    sd.setFromValue(0);
+                    sd.setToValue(1);
+                    sd.play();
                     ((SudokuTextField) field).setText("");
                     ((SudokuTextField) field).setFieldStyle(index);
                 }
@@ -132,6 +137,7 @@ public class SudokuGUI extends Application {
             }
         });
         buttonClear.setOnMouseEntered(event -> {
+            buttonClear.requestFocus();
             scaleUp.setNode(buttonClear);
             scaleUp.play();
         });
@@ -142,12 +148,12 @@ public class SudokuGUI extends Application {
 
         //Horizontal box that contains buttons
         HBox controls = new HBox();
-        controls.setPadding(new Insets(4, 4, 4, 4));
+        controls.setPadding(new Insets(10, 10, 10, 10));
         controls.setSpacing(20);
         controls.setAlignment(Pos.CENTER);
         controls.getChildren().addAll(buttonSolve, buttonClear);
 
-        root.setCenter(controls);
+        root.setBottom(controls);
 
         primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(root));

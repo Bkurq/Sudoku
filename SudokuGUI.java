@@ -87,7 +87,7 @@ public class SudokuGUI extends Application {
 
                     if(ret[row][col] == -1) {
                         field.setStyle("-fx-control-inner-background: #FF4545; -fx-font: 22 segoiui;");
-                        ScaleTransition st = new ScaleTransition(new Duration(300), field);
+                        ScaleTransition st = new ScaleTransition(new Duration(500), field);
                         st.setFromX(1.17);
                         st.setFromY(1.17);
                         st.setToX(1);
@@ -96,7 +96,7 @@ public class SudokuGUI extends Application {
                     } else if(ret[row][col] == 0) {
                         sudokuField.setText("");
                     } else {
-                        FadeTransition sd = new FadeTransition(new Duration(400), field);
+                        FadeTransition sd = new FadeTransition(new Duration(500), field);
                         sd.setFromValue(0);
                         sd.setToValue(1);
                         sd.play();
@@ -225,7 +225,7 @@ public class SudokuGUI extends Application {
     }
 
     /**
-     * TextField with limited maximum length that only accepts number 1-9 and holds its coordinates in the sudoku grid
+     * TextField with limited maximum length that only accepts number 1-9 and holds its own coordinates in the sudoku grid
      */
     private class SudokuTextField extends TextField {
         private final int length;
@@ -251,7 +251,6 @@ public class SudokuGUI extends Application {
                     if(Integer.parseInt(text) > 0)
                         super.replaceText(start, end, text);
                 } catch (Exception ignored) {
-
                 }
             }
         }
@@ -266,9 +265,7 @@ public class SudokuGUI extends Application {
                     if(Integer.parseInt(text) > 0)
                         super.replaceSelection(text);
                 } catch (Exception ignored) {
-
                 }
-
         }
 
         //Styling

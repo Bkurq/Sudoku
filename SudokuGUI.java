@@ -216,7 +216,7 @@ public class SudokuGUI extends Application {
                 }
             });
 
-            //Focus on mouse over
+            //Focus on mouse overg
             field.setOnMouseEntered(event -> field.requestFocus());
 
             pane.getChildren().add(field);
@@ -268,20 +268,21 @@ public class SudokuGUI extends Application {
                 }
         }
 
-        //Styling
-        public void setFieldStyle(int index) {
-            if(index % 2 == 0)
-                this.setStyle("-fx-control-inner-background: #ff7f50; -fx-font: 22 segoiui;");
-            else
-                this.setStyle("-fx-font: 22 segoiui;");
-        }
 
-        public int getRowPosition() {
-            return rowPosition;
-        }
-
-        public int getColumnPosition() {
-            return columnPosition;
-        }
+      //Styling
+    public void setFieldStyle(int index) {
+        if(index % 2 == 0)
+            this.setStyle("-fx-control-inner-background: #ff7f50; -fx-font: 22 segoiui;");
+        else
+            this.setStyle("-fx-font: 22 segoiui;");
     }
+
+    public int getRowPosition() {
+        return rowPosition;
+    }
+
+    public int getColumnPosition() {
+        return columnPosition;
+    }
+}
 }
